@@ -1,6 +1,6 @@
 import docker,json,os,time
 
-class Sample:
+class Agent:
 
 
     def __init__(self):
@@ -33,6 +33,7 @@ class Sample:
 
     def createContainer(self,name1,port1,image1,volume1,labels1):
         container=self.client.containers.run(name=name1,image=image1,ports=port1,volumes=volume1,labels=labels1,detach=True)
+        print("Created Container ",name1)
         return container
 
     def checkChangeInContainers(self):
@@ -69,5 +70,5 @@ class Sample:
             time.sleep(5)
 
 
-p1 = Sample()
+p1 = Agent()
 p1.run()

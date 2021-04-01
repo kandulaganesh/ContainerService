@@ -22,8 +22,11 @@ class Agent:
                 file_loc=self.spec_path+"/"+filename;
                 file_stream=open(file_loc, "r")
                 raw_container_spec = file_stream.read()
-                container_spec = json.loads(raw_container_spec)
-                self.new_containers.append(container_spec)
+                try:
+                    container_spec = json.loads(raw_container_spec)
+                    self.new_containers.append(container_spec)
+                except ValueError:
+                    print("Decoding JSON has failed")
 
     def deleteContainer(self,name1):
         container1=self.client.containers.list(filters={'name': name1})

@@ -1,6 +1,9 @@
 ---
 - name: Setting up the cluster
-  hosts: all
+  hosts: [nodes]
   become: True
   roles:
      - role: node
+  tasks:
+    - name: Import OpenvSwitch tasks
+      import_tasks: openvswitch_on_node_setup.yml

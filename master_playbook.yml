@@ -1,0 +1,13 @@
+---
+- name: Setting up the cluster on master's
+  hosts: [master]
+  become: True
+  roles:
+     - role: node
+
+- name: Setup OpenvSwitch on masters
+  hosts: [master]
+  become: True
+  tasks:
+    - name: Import OpenvSwitch tasks
+      import_tasks: openvswitch_on_master_setup.yml

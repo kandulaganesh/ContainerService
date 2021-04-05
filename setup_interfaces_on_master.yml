@@ -4,4 +4,4 @@
   with_items:
   - modprobe dummy
   - ip link add eth_fixed type dummy
-  - ifconfig eth_fixed {{ internal_ip }} netmask 255.255.255.0
+  - ifconfig eth_fixed {{ internal_ip }}

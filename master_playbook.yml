@@ -4,10 +4,6 @@
   become: True
   roles:
      - role: node
-
-- name: Setup OpenvSwitch on masters
-  hosts: [master]
-  become: True
   tasks:
-    - name: Import OpenvSwitch tasks
-      import_tasks: setup_gre_tunnel_on_master.yml
+    - import_tasks: setup_gre_tunnel_on_master.yml
+

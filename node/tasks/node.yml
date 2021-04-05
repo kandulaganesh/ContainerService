@@ -25,8 +25,8 @@
   template:
     src: docker.conf.j2
     dest: /etc/sysconfig/docker
-  notify:
-     - Restart docker
+#  notify:
+#     - Restart docker
 
 - name: Restarting docker to pick network changes
   ansible.builtin.systemd:

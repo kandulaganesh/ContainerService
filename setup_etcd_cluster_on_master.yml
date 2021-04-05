@@ -1,0 +1,25 @@
+---
+- name: Generate useful facts for current node 1
+  set_fact:
+    ip_addr: "{{ internal_ip }}"
+    etcd_name: "etcd{{ ansible_play_hosts.index(inventory_hostname) }}"
+
+- name: Generate useful facts for current node 2
+  set_fact:
+    etcd_uri: "{{ etcd_name }}=http://{{ ip_addr }}:2380"
+
+- name: Run etcd KV node
+  docker_container:
+    name: "{{ etcd_name }}"
+    image: quay.io/coreos/etcd
+    network_mode: host
+    command:
+      - /usr/local/bin/etcd
+      - -name {{ etcd_name }}
+      - -advertise-client-urls http://{{ ip_addr }}:2379,http://{{ ip_addr }}:4001
+      - -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001
+      - -initial-advertise-peer-urls http://{{ ip_addr }}:2380
+      - -initial-cluster {{ ansible_play_hosts | map('extract',hostvars,'etcd_uri') | list | join(',') }}
+      - -initial-cluster-token etcd-cluster
+      - -listen-peer-urls http://0.0.0.0:2380
+      - -initial-cluster-state new

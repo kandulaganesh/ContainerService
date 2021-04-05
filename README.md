@@ -21,4 +21,5 @@ Using etcd cluster for supporting master's HA.
 5. Etcd on master's for HA
 6. Define schema in etcd
 7. Agents should subscribe to etcd for any change in data and take appropriate action
+8. Playbooks for scaling master and node
  

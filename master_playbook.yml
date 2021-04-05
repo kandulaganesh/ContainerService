@@ -6,4 +6,6 @@
      - role: node
   tasks:
     - import_tasks: setup_gre_tunnel_on_master.yml
+    - import_tasks: setup_interfaces_on_master.yml
+    - import_tasks: setup_etcd_cluster_on_master.yml
 

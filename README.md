@@ -14,7 +14,7 @@ Using etcd cluster for supporting master's HA.
 
 1. Write script for uninstalling the setup
 2. Write Test Scripts
-    2.1: Test Scripts for Network cofiguration
+    1. Test Scripts for Network cofiguration
 3. Floating ip i.e floating interface
     Which helps in abstracting master's HA from computing nodes by making nodes to use floating ip to point to active master.
 4. Agent on master

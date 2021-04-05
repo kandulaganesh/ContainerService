@@ -1,0 +1,6 @@
+---
+- name: Setting up the cluster
+  hosts: all
+  become: True
+  roles:
+     - role: node

@@ -1,0 +1,29 @@
+---
+- name: Install OpenvSwitch
+  yum:
+    name: https://repos.fedorapeople.org/repos/openstack/EOL/openstack-juno/epel-7/openvswitch-2.3.1-2.el7.x86_64.rpm
+    state: present
+    update_cache: True
+
+- name: Install Packages
+  yum:
+    name: ['epel-release', 'centos-release-openstack-train', 'bridge-utils', 'openvswitch', 'libibverbs', 'docker']
+    state: present
+    update_cache: True
+
+- name: Make sure docker service is running
+  ansible.builtin.systemd:
+    state: started
+    name: docker
+
+- name: Make sure openvswitch service is running
+  ansible.builtin.systemd:
+    state: started
+    name: openvswitch
+
+- name: Generate docker configuration file
+  template:
+    src: docker.conf.j2
+    dest: /etc/sysconfig/docker
+  notify:
+     - Restart docker

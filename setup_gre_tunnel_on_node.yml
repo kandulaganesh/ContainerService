@@ -1,0 +1,4 @@
+---
+- name: Setup GRE tunnel from this node to masters
+  command: ovs-vsctl add-port br-int gre{{ hostvars[item]["node_id"] }} -- set interface gre{{ hostvars[item]["node_id"] }} type=gre options:remote_ip={{ hostvars[item]["node_ip"] }}
+  with_items: "{{ groups['master'] }}"

@@ -10,4 +10,4 @@
   become: True
   tasks:
     - name: Import OpenvSwitch tasks
-      import_tasks: openvswitch_on_master_setup.yml
+      import_tasks: setup_gre_tunnel_on_master.yml

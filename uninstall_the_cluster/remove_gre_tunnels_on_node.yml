@@ -1,0 +1,4 @@
+---
+- name: remove gre tunnels from node
+  command: ovs-vsctl del-port br-int gre{{ hostvars[item]["node_id"] }}
+  with_items: "{{ groups['master'] }}"

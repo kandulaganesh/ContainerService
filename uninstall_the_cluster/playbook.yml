@@ -1,0 +1,6 @@
+---
+- name: Removing the Cluster setup
+  hosts: all
+  become: True
+  tasks:
+    - import_tasks: common_playbook.yml

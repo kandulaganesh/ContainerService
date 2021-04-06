@@ -12,7 +12,7 @@ Using etcd cluster for supporting master's HA.
 
 # Pending
 
-1. Write script for uninstalling the setup
+1. Make uninstallation script more robust.
 2. Write Test Scripts
     1. Test Scripts for Network cofiguration
 3. Floating ip i.e floating interface
@@ -22,4 +22,6 @@ Using etcd cluster for supporting master's HA.
 6. Define schema in etcd
 7. Agents should subscribe to etcd for any change in data and take appropriate action
 8. Playbooks for scaling master and node
+9. Create internal N/W for nodes in cluster to communicate
+10. Make etcd listen on internal N/W
  

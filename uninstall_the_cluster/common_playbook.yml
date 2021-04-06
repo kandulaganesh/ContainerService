@@ -1,0 +1,39 @@
+---
+- name: remove the subnet route
+  command: ip route del 172.17.0.0/16
+  ignore_errors: True
+
+- name: cleanup the openvswitch
+  command: "{{ item }}"
+  with_items:
+  - ip link set veth1 down
+  - ip link set veth0 down
+  - ovs-vsctl del-port br-int veth1
+  ignore_errors: True
+
+- name: import gre cleanup tasks for master
+  import_tasks: remove_gre_tunnels_on_master.yml
+  ignore_errors: True
+
+- name: delete etcd container
+  command: "{{ item }}"
+  with_items:
+  - docker rm -f etcd0
+  - docker rm -f etcd1
+  - ip link del eth_fixed
+  ignore_errors: True
+
+- name: import gre cleanup tasks for node
+  import_tasks: remove_gre_tunnels_on_node.yml
+  ignore_errors: True
+
+- name: cleanup network objects
+  command: "{{ item }}"
+  with_items:
+  - ovs-vsctl del-br br-int
+  - brctl delif docker0 veth0
+  - ip link del veth0
+  - ip link del docker0
+  - yum remove docker -y
+  - yum remove openvswitch -y
+  ignore_errors: True

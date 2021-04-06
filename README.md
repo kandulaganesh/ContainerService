@@ -8,7 +8,7 @@ With Container Service, we can setup the cluster and scale the cluster very easi
 
 Container Service also supports HA for both nodes and master's. If active master goes down, second master which is in standby automatically becomes active.
 
-Using etcd cluster for supporting master's HA.
+Using etcd for supporting master's HA.
 
 # Pending
 

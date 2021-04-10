@@ -1,0 +1,9 @@
+---
+- name: Setting up the cluster on nodes
+  hosts: [nodes]
+  become: True
+  roles:
+     - role: node
+  tasks:
+    - import_tasks: setup_gre_tunnel_on_node.yml
+

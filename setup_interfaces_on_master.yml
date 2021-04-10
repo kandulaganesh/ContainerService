@@ -1,0 +1,8 @@
+---
+- name: Setup internal interfaces network on host
+  command: "{{ item }}"
+  with_items:
+  - modprobe dummy
+  - ip link add eth_fixed type dummy
+  - ifconfig eth_fixed {{ internal_ip }}
+  - ip route del {{ cluster_subnet }} dev eth_fixed

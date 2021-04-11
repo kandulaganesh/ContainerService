@@ -24,4 +24,6 @@ Using etcd for supporting master's HA.
 8. Playbooks for scaling master and node
 9. Create internal N/W for nodes in cluster to communicate
 10. Make etcd listen on internal N/W
- 
+11. Update master agent code to send requests to floating ip
+12. Update node agent code to pull container spec from etcd
+13. Use etcd watches, instead of polling continously

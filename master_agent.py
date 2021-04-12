@@ -26,24 +26,41 @@ class MasterAgent:
         json_data = json.loads(string_data)
         return json_data
 
-    def post_new_service_in_etcd(self, service_name, service):
-        str_service=self.convert_json_to_string(service)
+    def post_new_service_in_etcd(self, json_service):
+        service_name=json_service['name']
+        str_service=self.convert_json_to_string(json_service)
         payload={'value':str_service}
         self.apiRequest("PUT","unscheduled",payload,service_name)
 
     def scheduled_service_on_node(self,node_id,container_spec_in_json):
         path="scheduled/node{}".format(node_id)
+        container_spec_in_json["labels"]["nodeId"]=node_id
         conatiner_spec_in_str=self.convert_json_to_string(container_spec_in_json)
         payload={'value':conatiner_spec_in_str}
         self.apiRequest("PUT",path,payload,container_spec_in_json["name"])
 
+    def delete_the_service_config_from_etcd(self, path, svc_spec_in_json):
+        self.apiRequest("DELETE",path,None,svc_spec_in_json["name"])
+
+    def marshal_the_code(self, service_info_in_json):
+        containers = []
+        if "errorCode" in service_info_in_json:
+            return containers
+        if "nodes" not in service_info_in_json['node']:
+            return []
+        for service in service_info_in_json['node']['nodes']:
+            svc_spec = service['value']
+            svc_spec = self.convert_string_to_json(svc_spec)
+            containers.append(svc_spec)
+        return containers
+
     def schedule_the_unscheduled_containers(self):
         containers=self.apiRequest("GET","unscheduled",None,"")
         containers=containers.json()
-        for container in containers['node']['nodes']:
-            svc_spec=container['value']
-            svc_spec=self.convert_string_to_json(svc_spec)
-            self.scheduled_service_on_node(1,svc_spec)
+        containers=self.marshal_the_code(containers)
+        for container in containers:
+            self.scheduled_service_on_node(1,container)
+            self.delete_the_service_config_from_etcd("unscheduled",container)
 
     def scheduler(self):
         self.schedule_the_unscheduled_containers()
@@ -64,13 +81,53 @@ class MasterAgent:
         return new_containers
 
     def post_spec_to_etcd(self, spec_containers):
-        for container in spec_containers:
-            self.post_new_service_in_etcd(container["name"],container)
+        self.post_new_service_in_etcd(spec_containers)
+
+    def get_service_config_of_node_from_etcd(self, node_id):
+        path="scheduled/node{}".format(node_id)
+        containers=self.apiRequest("GET",path,None,"")
+        containers=containers.json()
+        containers = self.marshal_the_code(containers)
+        return containers
+
+    def get_service_config_from_etcd(self):
+        config_containers = []
+        container=self.get_service_config_of_node_from_etcd(1)
+        config_containers.extend(container)
+        return config_containers
+
+    def compare_config(self, spec_containers, config_containers):
+        for service in config_containers:
+            flag=False
+            for spec_service in spec_containers:
+                if service["name"] == spec_service["name"]:
+                    flag=True
+                    break
+            if not flag:
+                node_id=service["labels"]["nodeId"]
+                path="scheduled/node{}".format(node_id)
+                print("Deleting Service ",service["name"])
+                self.delete_the_service_config_from_etcd(path,service)
+
+        for spec_service in spec_containers:
+            spec_service_name = spec_service["name"]
+            flag=False
+            for service in config_containers:
+                if spec_service_name == service['name']:
+                    flag=True
+            if not flag:
+                if "port" not in spec_service:
+                    spec_service["port"]=""
+                if "volumes" not in spec_service:
+                    spec_service["volumes"]=""
+                print("Found new service ",spec_service["name"])
+                self.post_spec_to_etcd(spec_service)
 
     def run(self):
         while True:
             spec_containers=self.get_new_services()
-            self.post_spec_to_etcd(spec_containers)
+            config_containers=self.get_service_config_from_etcd()
+            self.compare_config(spec_containers, config_containers)
             self.scheduler()
             time.sleep(15)
 

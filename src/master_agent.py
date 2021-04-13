@@ -1,22 +1,27 @@
-import json,requests,os,time
+import json,requests,os,time,netifaces,signal
 
 class MasterAgent:
-    def apiRequest(self, operation, path, payload=None, name=None):
+
+    def apiRequest(self, operation, path, payload=None, name=None, base_path="keys"):
         '''
-            url format: http://127.0.0.1:2379/v2/keys/fooDir/
+            url format: http://127.0.0.1:2379/v2/keys/fooDir
         '''
-        url = self._url(path)
+        url = self._url(path, base_path)
         resp = None
-        if operation == "GET":
-            resp = requests.get('{}{}'.format(url,name))
-        if operation == "PUT":
-            resp = requests.put('{}{}'.format(url,name), data=payload)
-        if operation == "DELETE":
-            resp = requests.delete('{}{}'.format(url,name))
+        try:
+            if operation == "GET":
+                resp = requests.get('{}{}'.format(url,name))
+            if operation == "PUT":
+                resp = requests.put('{}/{}'.format(url,name), data=payload)
+            if operation == "DELETE":
+                resp = requests.delete('{}/{}'.format(url,name))
+        except:
+            print("Failed to connect to etcd")
         return resp
 
-    def _url(self, path):
-        return 'http://127.0.0.1:2379/v2/keys/' + path + '/'
+    def _url(self, path, base_path):
+        url = "http://127.0.0.1:2379/v2/{}/{}".format(base_path,path)
+        return url
 
     def convert_json_to_string(self, json_data):
         str_data = json.dumps(json_data)
@@ -47,7 +52,7 @@ class MasterAgent:
         if "errorCode" in service_info_in_json:
             return containers
         if "nodes" not in service_info_in_json['node']:
-            return []
+            return containers
         for service in service_info_in_json['node']['nodes']:
             svc_spec = service['value']
             svc_spec = self.convert_string_to_json(svc_spec)
@@ -56,6 +61,8 @@ class MasterAgent:
 
     def schedule_the_unscheduled_containers(self):
         containers=self.apiRequest("GET","unscheduled",None,"")
+        if containers == None:
+            return
         containers=containers.json()
         containers=self.marshal_the_code(containers)
         for container in containers:
@@ -86,6 +93,8 @@ class MasterAgent:
     def get_service_config_of_node_from_etcd(self, node_id):
         path="scheduled/node{}".format(node_id)
         containers=self.apiRequest("GET",path,None,"")
+        if containers == None:
+            return []
         containers=containers.json()
         containers = self.marshal_the_code(containers)
         return containers
@@ -95,6 +104,29 @@ class MasterAgent:
         container=self.get_service_config_of_node_from_etcd(1)
         config_containers.extend(container)
         return config_containers
+
+    def is_current_etcd_leader(self):
+        resp = self.apiRequest("GET","self",None,"","stats")
+        if resp == None:
+            return False
+        data=resp.json()
+        if data["state"] == "StateLeader":
+            return True
+        return False
+
+    def config_floating_ip(self):
+        is_leader=self.is_current_etcd_leader()
+        print("Am i leader ",is_leader)
+        netifaces.ifaddresses('eth_float')
+        is_float_ip = netifaces.AF_INET in netifaces.ifaddresses('eth_float')
+        if is_leader:
+            if is_float_ip == False:
+                print("Floating ip found is 0.0.0.0")
+                os.system("ifconfig eth_float 172.17.0.50 netmask 255.255.255.255")
+        else:
+            if is_float_ip == True:
+                print("Floating ip found is 172.17.0.50")
+                os.system("ip addr del 172.17.0.50/32 dev eth_float")
 
     def compare_config(self, spec_containers, config_containers):
         for service in config_containers:
@@ -129,6 +161,7 @@ class MasterAgent:
             config_containers=self.get_service_config_from_etcd()
             self.compare_config(spec_containers, config_containers)
             self.scheduler()
+            self.config_floating_ip()
             time.sleep(15)
 
 p1=MasterAgent()

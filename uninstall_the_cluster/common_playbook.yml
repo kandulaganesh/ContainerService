@@ -21,6 +21,10 @@
   - docker rm -f etcd0
   - docker rm -f etcd1
   - ip link del eth_fixed
+  - ip link del eth_float
+  - docker rm -f master_agent
+  - docker rm -f node_agent
+  - docker system prune -af
   ignore_errors: True
 
 - name: import gre cleanup tasks for node

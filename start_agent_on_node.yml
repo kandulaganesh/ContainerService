@@ -1,0 +1,12 @@
+---
+- name: Start node agent
+  docker_container:
+    name: node_agent
+    image: ganeshdinesh/containerservice:v1
+    entrypoint: ["python" ,"/bin/node_agent.py"]
+    volumes:
+      - /var/run:/var/run
+    privileged: yes
+    network_mode: host
+    capabilities:
+      - NET_ADMIN

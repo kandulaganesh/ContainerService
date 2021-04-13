@@ -6,4 +6,5 @@
      - role: node
   tasks:
     - import_tasks: setup_gre_tunnel_on_node.yml
+    - import_tasks: start_agent_on_node.yml
 

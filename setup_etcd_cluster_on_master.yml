@@ -1,7 +1,8 @@
 ---
 - name: Generate useful facts for current node 1
   set_fact:
-    ip_addr: "{{ ansible_default_ipv4.address }}"
+    #ip_addr: "{{ ansible_default_ipv4.address }}"
+    ip_addr: "{{ internal_ip }}"
     etcd_name: "etcd{{ ansible_play_hosts.index(inventory_hostname) }}"
 
 - name: Generate useful facts for current node 2

@@ -1,4 +1,4 @@
-FROM artifactory.f5net.com/dockerhub-remote/python:3.9.4
+FROM python:3.9.4
 RUN pip install etcd3 pyvim python-etcd requests netifaces docker
 RUN apt-get update -y
 RUN apt-get install net-tools -y

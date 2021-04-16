@@ -28,3 +28,8 @@ Using etcd for supporting master's HA.
 12. Update node agent code to pull container spec from etcd
 13. Use etcd watches, instead of polling continously
 14. Find the network loops and fix them
+
+
+## Architecture
+
+![alt text](https://github.com/kandulaganesh/ContainerService/blob/a5d8978734da0516f51d0adb64021fbbfb5d8c0a/images/ContainerService.jpeg?raw=true)

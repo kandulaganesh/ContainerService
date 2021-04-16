@@ -127,9 +127,8 @@ class MasterAgent:
                 os.system("ip addr del 172.17.0.50/32 dev eth_float")
 
     def compare_config(self, spec_containers, config_containers):
-        index=-1
-        for service in config_containers:
-            index=index+1
+        temp=config_containers.copy()
+        for service in temp:
             flag=False
             for spec_service in spec_containers:
                 if service["name"] == spec_service["name"]:
@@ -140,12 +139,13 @@ class MasterAgent:
                 path="scheduled/node{}".format(node_id)
                 print("Deleting Service ",service["name"])
                 self.delete_the_service_config_from_etcd(path,service)
-                config_containers.pop[index]
+                config_containers.remove(service)
 
+        temp=config_containers.copy()
         for spec_service in spec_containers:
             spec_service_name = spec_service["name"]
             flag=False
-            for service in config_containers:
+            for service in temp:
                 if spec_service_name == service['name']:
                     flag=True
             if not flag:

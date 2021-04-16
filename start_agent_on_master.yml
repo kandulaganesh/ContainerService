@@ -2,7 +2,7 @@
 - name: Start master agent
   docker_container:
     name: master_agent
-    image: ganeshdinesh/containerservice:v1
+    image: ganeshdinesh/containerservice:v2
     network_mode: host
     capabilities:
       - NET_ADMIN

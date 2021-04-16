@@ -2,7 +2,7 @@
 - name: Start node agent
   docker_container:
     name: node_agent
-    image: ganeshdinesh/containerservice:v1
+    image: ganeshdinesh/containerservice:v2
     entrypoint: ["python" ,"/bin/node_agent.py"]
     volumes:
       - /var/run:/var/run

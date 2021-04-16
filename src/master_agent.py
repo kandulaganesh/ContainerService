@@ -33,6 +33,7 @@ class MasterAgent:
 
     def post_new_service_in_etcd(self, json_service):
         service_name=json_service['name']
+        json_service["labels"]["type"]="GCS"
         str_service=self.convert_json_to_string(json_service)
         payload={'value':str_service}
         self.apiRequest("PUT","unscheduled",payload,service_name)

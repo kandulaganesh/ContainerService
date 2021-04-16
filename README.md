@@ -33,3 +33,5 @@ Using etcd for supporting master's HA.
 ## Architecture
 
 ![alt text](https://github.com/kandulaganesh/ContainerService/blob/a5d8978734da0516f51d0adb64021fbbfb5d8c0a/images/ContainerService.jpeg?raw=true)
+
+Using gre tunnels, inter-node communication happens

@@ -24,7 +24,7 @@
   - ip link del eth_float
   - docker rm -f master_agent
   - docker rm -f node_agent
-  - docker system prune -af
+  #- docker system prune -af
   ignore_errors: True
 
 - name: import gre cleanup tasks for node

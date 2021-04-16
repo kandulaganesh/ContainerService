@@ -1,4 +1,4 @@
-import json,requests,os,time,netifaces,signal
+import json,requests,os,time,netifaces
 
 class MasterAgent:
 
@@ -114,9 +114,7 @@ class MasterAgent:
             return True
         return False
 
-    def config_floating_ip(self):
-        is_leader=self.is_current_etcd_leader()
-        print("Am i leader ",is_leader)
+    def config_floating_ip(self, is_leader):
         netifaces.ifaddresses('eth_float')
         is_float_ip = netifaces.AF_INET in netifaces.ifaddresses('eth_float')
         if is_leader:
@@ -129,7 +127,9 @@ class MasterAgent:
                 os.system("ip addr del 172.17.0.50/32 dev eth_float")
 
     def compare_config(self, spec_containers, config_containers):
+        index=-1
         for service in config_containers:
+            index=index+1
             flag=False
             for spec_service in spec_containers:
                 if service["name"] == spec_service["name"]:
@@ -140,6 +140,7 @@ class MasterAgent:
                 path="scheduled/node{}".format(node_id)
                 print("Deleting Service ",service["name"])
                 self.delete_the_service_config_from_etcd(path,service)
+                config_containers.pop[index]
 
         for spec_service in spec_containers:
             spec_service_name = spec_service["name"]
@@ -154,14 +155,18 @@ class MasterAgent:
                     spec_service["volumes"]=""
                 print("Found new service ",spec_service["name"])
                 self.post_spec_to_etcd(spec_service)
+                config_containers.append(spec_service)
 
     def run(self):
         while True:
-            spec_containers=self.get_new_services()
-            config_containers=self.get_service_config_from_etcd()
-            self.compare_config(spec_containers, config_containers)
-            self.scheduler()
-            self.config_floating_ip()
+            is_leader=self.is_current_etcd_leader()
+            print("Am i leader ",is_leader)
+            if is_leader:
+                spec_containers=self.get_new_services()
+                config_containers=self.get_service_config_from_etcd()
+                self.compare_config(spec_containers, config_containers)
+                self.scheduler()
+            self.config_floating_ip(is_leader)
             time.sleep(15)
 
 p1=MasterAgent()

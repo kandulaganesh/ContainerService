@@ -7,6 +7,7 @@ class Agent:
         self.client = docker.from_env()
         self.existing_containers_cache=[]
         self.new_containers=[]
+        self.nodeId=0
 
     def getHostContainers(self):
         all_containers=self.client.containers.list(filters={"label": "type=GCS"})
@@ -31,9 +32,8 @@ class Agent:
         return containers
 
     def getSpecContainers(self):
-        node_id=1
         resp=None
-        url="http://172.17.0.50:2379/v2/keys/scheduled/node{}".format(node_id)
+        url="http://172.17.0.50:2379/v2/keys/scheduled/node{}".format(self.nodeId)
         try:
             resp = requests.get(url)
         except:
@@ -90,6 +90,7 @@ class Agent:
                 self.existing_containers_cache.append(spec_service)
 
     def run(self):
+        self.nodeId=os.environ.get('nodeId')
         while True:
             del self.existing_containers_cache[:]
             del self.new_containers[:]

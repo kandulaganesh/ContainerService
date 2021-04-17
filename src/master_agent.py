@@ -67,7 +67,10 @@ class MasterAgent:
         containers=containers.json()
         containers=self.marshal_the_code(containers)
         for container in containers:
-            self.scheduled_service_on_node(1,container)
+            nodeid=1
+            if "nodeSelector" in container:
+                nodeid=container["nodeSelector"]
+            self.scheduled_service_on_node(nodeid,container)
             self.delete_the_service_config_from_etcd("unscheduled",container)
 
     def scheduler(self):

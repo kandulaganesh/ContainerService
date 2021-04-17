@@ -10,3 +10,5 @@
     network_mode: host
     capabilities:
       - NET_ADMIN
+    env:
+        nodeId: "{{ node_id | string }}"

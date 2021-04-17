@@ -28,6 +28,7 @@ Using etcd for supporting master's HA.
 12. Update node agent code to pull container spec from etcd
 13. Use etcd watches, instead of polling continously
 14. Find the network loops and fix them
+15. Assign unique nodeId to nodes
 
 
 ## Architecture

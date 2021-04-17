@@ -2,7 +2,7 @@ import json,requests,os,time,netifaces
 
 class MasterAgent:
 
-    def apiRequest(self, operation, path, payload=None, name=None, base_path="keys"):
+    def apiRequest(self, operation, path, payload=None, name="", base_path="keys"):
         '''
             url format: http://127.0.0.1:2379/v2/keys/fooDir
         '''
@@ -48,16 +48,30 @@ class MasterAgent:
     def delete_the_service_config_from_etcd(self, path, svc_spec_in_json):
         self.apiRequest("DELETE",path,None,svc_spec_in_json["name"])
 
+    def get_service_info_from_etcd_key(self, service_info_in_list):
+        containers=[]
+        for service in service_info_in_list:
+            svc_spec = service['value']
+            svc_spec = self.convert_string_to_json(svc_spec)
+            containers.append(svc_spec)
+        return containers
+
+    def get_number_of_nodes(self):
+        path="scheduled"
+        nodes=self.apiRequest("GET",path,None,"")
+        if nodes == None:
+            return 0
+        nodes=nodes.json()
+        nodes=self.marshal_the_code(nodes)
+        return len(nodes)
+
     def marshal_the_code(self, service_info_in_json):
         containers = []
         if "errorCode" in service_info_in_json:
             return containers
         if "nodes" not in service_info_in_json['node']:
             return containers
-        for service in service_info_in_json['node']['nodes']:
-            svc_spec = service['value']
-            svc_spec = self.convert_string_to_json(svc_spec)
-            containers.append(svc_spec)
+        containers=service_info_in_json['node']['nodes']
         return containers
 
     def schedule_the_unscheduled_containers(self):
@@ -66,6 +80,7 @@ class MasterAgent:
             return
         containers=containers.json()
         containers=self.marshal_the_code(containers)
+        containers=self.get_service_info_from_etcd_key(containers)
         for container in containers:
             nodeid=1
             if "nodeSelector" in container:
@@ -101,12 +116,15 @@ class MasterAgent:
             return []
         containers=containers.json()
         containers = self.marshal_the_code(containers)
+        containers=self.get_service_info_from_etcd_key(containers)
         return containers
 
     def get_service_config_from_etcd(self):
         config_containers = []
-        container=self.get_service_config_of_node_from_etcd(1)
-        config_containers.extend(container)
+        no_nodes=self.get_number_of_nodes()
+        for nodeId in range(1,no_nodes+1):
+            container=self.get_service_config_of_node_from_etcd(nodeId)
+            config_containers.extend(container)
         return config_containers
 
     def is_current_etcd_leader(self):
@@ -164,13 +182,13 @@ class MasterAgent:
     def run(self):
         while True:
             is_leader=self.is_current_etcd_leader()
+            self.config_floating_ip(is_leader)
             print("Am i leader ",is_leader)
             if is_leader:
                 spec_containers=self.get_new_services()
                 config_containers=self.get_service_config_from_etcd()
                 self.compare_config(spec_containers, config_containers)
                 self.scheduler()
-            self.config_floating_ip(is_leader)
             time.sleep(15)
 
 p1=MasterAgent()

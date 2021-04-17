@@ -3,5 +3,6 @@
    "labels":{"name":"nginx", "type":"GCS"},
    "port":{"1111/tcp": 1234},
    "volumes":{"/var/run": {"bind": "/var/run", "mode": "rw"}},
-   "image": "nginx:latest"
+   "image": "nginx:latest",
+   "nodeSelector":"2"
 }

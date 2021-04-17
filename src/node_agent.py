@@ -9,8 +9,22 @@ class Agent:
         self.new_containers=[]
         self.nodeId=0
 
+    def apiRequest(self,operation="GET"):
+        resp=None
+        url="http://172.17.0.50:2379/v2/keys/scheduled/node{}".format(self.nodeId)
+        try:
+            if operation == "GET":
+                resp = requests.get(url)
+            if operation == "PUT":
+                payload={"dir": "true"}
+                resp=requests.put(url,data=payload)
+        except:
+            resp=None
+            print("Failed to connect to etcd")
+        return resp
+
     def getHostContainers(self):
-        all_containers=self.client.containers.list(filters={"label": "type=GCS"})
+        all_containers=self.client.containers.list(all=True,filters={"label": "type=GCS"})
         del self.existing_containers_cache[:]
         for container in all_containers:
             self.existing_containers_cache.append(container.name)
@@ -32,13 +46,7 @@ class Agent:
         return containers
 
     def getSpecContainers(self):
-        resp=None
-        url="http://172.17.0.50:2379/v2/keys/scheduled/node{}".format(self.nodeId)
-        try:
-            resp = requests.get(url)
-        except:
-            resp=None
-            print("Failed to connect to etcd")
+        resp=self.apiRequest()
         if resp == None:
             return self.existing_containers_cache
         containers=resp.json()
@@ -59,6 +67,9 @@ class Agent:
         except:
             print("Failed to Create Container ",name1)
         return container
+
+    def nodeRegistration(self):
+        self.apiRequest("PUT")
 
     def checkChangeInContainers(self):
         temp=self.existing_containers_cache.copy()
@@ -91,6 +102,8 @@ class Agent:
 
     def run(self):
         self.nodeId=os.environ.get('nodeId')
+        time.sleep(30) #sleeping for a while for master to configure floating ip
+        self.nodeRegistration()
         while True:
             del self.existing_containers_cache[:]
             del self.new_containers[:]

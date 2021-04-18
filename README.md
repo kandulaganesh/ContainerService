@@ -37,12 +37,12 @@ Using etcd for supporting master's HA.
 1. Master's and nodes are HighAvailable
 2. Abstration of Masters from nodes using floatingip
 
-#Security
+# Security
 
 1. ContainerService uses private subnet
 
 
-#Issues and fixes
+# Issues and fixes
 
 1. Using STP for network loops
 

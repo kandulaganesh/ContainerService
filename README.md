@@ -29,7 +29,22 @@ Using etcd for supporting master's HA.
 13. Use etcd watches, instead of polling continously
 14. Find the network loops and fix them
 15. Assign unique nodeId to nodes
+16. Support Subnet Change
 
+# Features
+## HighAvailability
+
+1. Master's and nodes are HighAvailable
+2. Abstration of Masters from nodes using floatingip
+
+#Security
+
+1. ContainerService uses private subnet
+
+
+#Issues and fixes
+
+1. Using STP for network loops
 
 ## Architecture
 

@@ -1,9 +1,21 @@
 
 [master]
-10.144.75.7 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.17.1.1/24 node_ip=10.144.75.7 node_id=1 internal_ip=172.17.0.51
-10.144.74.139 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.17.2.1/24 node_ip=10.144.74.139 node_id=2 internal_ip=172.17.0.52
+10.144.74.139 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.19.1.1/24 node_ip=10.144.74.139 node_id=1 internal_ip=172.19.0.51
+10.255.81.204 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.19.2.1/24 node_ip=10.255.81.204 node_id=2 internal_ip=172.19.0.52
+10.144.75.7 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.19.3.1/24 node_ip=10.144.75.7 node_id=3 internal_ip=172.19.0.53
 
 [nodes]
-10.145.65.201 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.17.11.1/24 node_ip=10.145.65.201 node_id=1
-10.145.67.14 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.17.12.1/24 node_ip=10.145.67.14 node_id=2
+10.145.65.201 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.19.11.1/24 node_ip=10.145.65.201 node_id=1
+10.145.67.14 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.19.12.1/24 node_ip=10.145.67.14 node_id=2
+10.255.82.107 ansible_ssh_user=root ansible_ssh_pass=default node_subnet=172.19.13.1/24 node_ip=10.255.82.107 node_id=3
+
+
+[allhosts:children]
+master
+nodes
+
+[allhosts:vars]
+cluster_subnet=172.19.0.0/16
+floating_ip=172.19.0.50
+
 

@@ -1,7 +1,7 @@
 {
    "name": "tomcat",
-   "labels":{"name":"tomcat", "type":"GCS"},
-   "port":{"1111/tcp": 1234},
+   "labels":{"name":"tomcat"},
+   "port":{"8080/tcp": 8888},
    "volumes":{"/var/run": {"bind": "/var/run", "mode": "rw"}},
    "image": "tomcat:latest"
 }

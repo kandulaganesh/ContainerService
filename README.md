@@ -10,7 +10,7 @@ Container Service also supports HA for both nodes and master's. If active master
 
 Using etcd for supporting master's HA.
 
-# Pending
+# Tasks
 
 1. Make uninstallation script more robust.
 2. Write Test Scripts
@@ -31,11 +31,14 @@ Using etcd for supporting master's HA.
 15. Assign unique nodeId to nodes
 16. Support Subnet Change
 
+# Provisioning
+With ContainerService we can setup cluster with a single touch using ansible configuration management tool
+
 # Features
 ## HighAvailability
 
 1. Master's and nodes are HighAvailable
-2. Abstration of Masters from nodes using floatingip
+2. Abstration of Masters from nodes using floatingIp
 
 # Security
 
@@ -50,4 +53,4 @@ Using etcd for supporting master's HA.
 
 ![alt text](https://github.com/kandulaganesh/ContainerService/blob/a5d8978734da0516f51d0adb64021fbbfb5d8c0a/images/ContainerService.jpeg?raw=true)
 
-Using gre tunnels, inter-node communication happens
+Using gre tunnels for inter-node communication

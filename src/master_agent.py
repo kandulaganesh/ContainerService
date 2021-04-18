@@ -56,12 +56,19 @@ class MasterAgent:
             containers.append(svc_spec)
         return containers
 
+    def convert_request_to_json(self,response):
+        try:
+            response=response.json()
+        except:
+           response={"errorCode": "Failed to Decode json"}
+        return response
+
     def get_number_of_nodes(self):
-        path="scheduled"
+        path="nodestatus"
         nodes=self.apiRequest("GET",path,None,"")
         if nodes == None:
             return 0
-        nodes=nodes.json()
+        nodes=self.convert_request_to_json(nodes)
         nodes=self.marshal_the_code(nodes)
         return len(nodes)
 
@@ -78,7 +85,7 @@ class MasterAgent:
         containers=self.apiRequest("GET","unscheduled",None,"")
         if containers == None:
             return
-        containers=containers.json()
+        containers=self.convert_request_to_json(containers)
         containers=self.marshal_the_code(containers)
         containers=self.get_service_info_from_etcd_key(containers)
         for container in containers:
@@ -114,7 +121,7 @@ class MasterAgent:
         containers=self.apiRequest("GET",path,None,"")
         if containers == None:
             return []
-        containers=containers.json()
+        containers=self.convert_request_to_json(containers)
         containers = self.marshal_the_code(containers)
         containers=self.get_service_info_from_etcd_key(containers)
         return containers
@@ -131,7 +138,9 @@ class MasterAgent:
         resp = self.apiRequest("GET","self",None,"","stats")
         if resp == None:
             return False
-        data=resp.json()
+        data=self.convert_request_to_json(resp)
+        if "errorCode" in data:
+            return False
         if data["state"] == "StateLeader":
             return True
         return False

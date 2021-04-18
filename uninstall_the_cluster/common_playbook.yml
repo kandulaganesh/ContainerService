@@ -20,6 +20,7 @@
   with_items:
   - docker rm -f etcd0
   - docker rm -f etcd1
+  - docker rm -f etcd2
   - ip link del eth_fixed
   - ip link del eth_float
   - docker rm -f master_agent

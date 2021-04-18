@@ -16,11 +16,11 @@ class Agent:
         try:
             if operation == "GET":
                 resp = requests.get(url)
-            if operation == "PUT":
-                payload={"dir": "true"}
+            elif operation == "PUT":
+                url="http://{}:2379/v2/keys/nodestatus/node{}/healthy".format(self.floating_ip,self.nodeId)
+                payload={"value": "true","ttl": 20}
                 resp=requests.put(url,data=payload)
         except:
-            resp=None
             print("Failed to connect to etcd")
         return resp
 
@@ -37,7 +37,7 @@ class Agent:
     def marshal_the_code(self,service_info_in_json):
         containers = []
         if "errorCode" in service_info_in_json:
-            return containers
+            return None
         if "nodes" not in service_info_in_json['node']:
             return containers
         for service in service_info_in_json['node']['nodes']:
@@ -46,13 +46,21 @@ class Agent:
             containers.append(svc_spec)
         return containers
 
+    def convert_response_to_json(self,response):
+        try:
+            response=response.json()
+        except:
+           response={"errorCode": "Failed to Decode json"}
+        return response
+
     def getSpecContainers(self):
         resp=self.apiRequest()
-        if resp == None:
-            return self.existing_containers_cache
-        containers=resp.json()
-        self.new_containers = self.marshal_the_code(containers)
-
+        containers=self.convert_response_to_json(resp)
+        temp = self.marshal_the_code(containers)
+        if temp != None:
+            del self.new_containers[:]
+            self.new_containers=temp
+       
     def deleteContainer(self,name1):
         container1=self.client.containers.list(all=True,filters={'name': name1})
         container1[0].stop()
@@ -84,7 +92,7 @@ class Agent:
                 self.deleteContainer(service)
                 self.existing_containers_cache.remove(service)
 
-        temp=self.new_containers
+        temp=self.new_containers.copy()
         for spec_service in temp:
             spec_service_name = spec_service["name"]
             flag=False
@@ -105,11 +113,8 @@ class Agent:
         self.nodeId=os.environ.get('nodeId')
         if "floating_ip" in os.environ:
             self.floating_ip=os.environ["floating_ip"]
-        time.sleep(30) #sleeping for a while for master to configure floating ip
-        self.nodeRegistration()
         while True:
-            del self.existing_containers_cache[:]
-            del self.new_containers[:]
+            self.nodeRegistration()
             self.getHostContainers() # Call first Host Containers and then Spec Containers
             self.getSpecContainers()
             self.checkChangeInContainers()

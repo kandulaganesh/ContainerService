@@ -1,2 +1,4 @@
 ---
 # defaults file for node
+cluster_subnet : 172.17.0.0/16
+

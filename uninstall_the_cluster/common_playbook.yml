@@ -1,6 +1,6 @@
 ---
 - name: remove the subnet route
-  command: ip route del 172.17.0.0/16
+  command: ip route del {{ cluster_subnet }}
   ignore_errors: True
 
 - name: cleanup the openvswitch

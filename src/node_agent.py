@@ -8,10 +8,11 @@ class Agent:
         self.existing_containers_cache=[]
         self.new_containers=[]
         self.nodeId=0
+        self.floating_ip="172.17.0.50"
 
     def apiRequest(self,operation="GET"):
         resp=None
-        url="http://172.17.0.50:2379/v2/keys/scheduled/node{}".format(self.nodeId)
+        url="http://{}:2379/v2/keys/scheduled/node{}".format(self.floating_ip,self.nodeId)
         try:
             if operation == "GET":
                 resp = requests.get(url)
@@ -53,7 +54,7 @@ class Agent:
         self.new_containers = self.marshal_the_code(containers)
 
     def deleteContainer(self,name1):
-        container1=self.client.containers.list(filters={'name': name1})
+        container1=self.client.containers.list(all=True,filters={'name': name1})
         container1[0].stop()
         container1[0].remove()
         print("Deleted Container ",name1)
@@ -102,6 +103,8 @@ class Agent:
 
     def run(self):
         self.nodeId=os.environ.get('nodeId')
+        if "floating_ip" in os.environ:
+            self.floating_ip=os.environ["floating_ip"]
         time.sleep(30) #sleeping for a while for master to configure floating ip
         self.nodeRegistration()
         while True:

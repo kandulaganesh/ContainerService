@@ -136,17 +136,19 @@ class MasterAgent:
             return True
         return False
 
-    def config_floating_ip(self, is_leader):
+    def config_floating_ip(self, is_leader,floating_ip):
         netifaces.ifaddresses('eth_float')
         is_float_ip = netifaces.AF_INET in netifaces.ifaddresses('eth_float')
         if is_leader:
             if is_float_ip == False:
                 print("Floating ip found is 0.0.0.0")
-                os.system("ifconfig eth_float 172.17.0.50 netmask 255.255.255.255")
+                cmd="ifconfig eth_float {} netmask 255.255.255.255".format(floating_ip)
+                os.system(cmd)
         else:
             if is_float_ip == True:
-                print("Floating ip found is 172.17.0.50")
-                os.system("ip addr del 172.17.0.50/32 dev eth_float")
+                print("Floating ip found is ",floating_ip)
+                cmd="ip addr del {}/32 dev eth_float".format(floating_ip)
+                os.system(cmd)
 
     def compare_config(self, spec_containers, config_containers):
         temp=config_containers.copy()
@@ -180,9 +182,12 @@ class MasterAgent:
                 config_containers.append(spec_service)
 
     def run(self):
+        floating_ip="172.17.0.50"
+        if "floating_ip" in os.environ:
+            floating_ip=os.environ["floating_ip"]
         while True:
             is_leader=self.is_current_etcd_leader()
-            self.config_floating_ip(is_leader)
+            self.config_floating_ip(is_leader,floating_ip)
             print("Am i leader ",is_leader)
             if is_leader:
                 spec_containers=self.get_new_services()

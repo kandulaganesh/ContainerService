@@ -2,7 +2,9 @@
 - name: Start master agent
   docker_container:
     name: master_agent
-    image: ganeshdinesh/containerservice:v2
+    image: ganeshdinesh/containerservice:v1
     network_mode: host
     capabilities:
       - NET_ADMIN
+    env:
+        floating_ip: "{{ floating_ip }}"

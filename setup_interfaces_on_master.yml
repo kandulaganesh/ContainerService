@@ -4,5 +4,7 @@
   with_items:
   - modprobe dummy
   - ip link add eth_fixed type dummy
-  - ifconfig eth_fixed {{ internal_ip }}
-  - ip route del {{ cluster_subnet }} dev eth_fixed
+  - ifconfig eth_fixed {{ internal_ip }} netmask 255.255.255.255
+  #- ip route del {{ cluster_subnet }} dev eth_fixed
+  - modprobe dummy
+  - ip link add eth_float type dummy

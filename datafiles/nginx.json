@@ -1,0 +1,8 @@
+{
+   "name": "nginx",
+   "labels":{"name":"nginx"},
+   "port":{"80/tcp": 8080},
+   "volumes":{"/var/run": {"bind": "/var/run", "mode": "rw"}},
+   "image": "nginx:latest",
+   "nodeSelector":"2"
+}

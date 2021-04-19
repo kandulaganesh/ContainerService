@@ -1,0 +1,7 @@
+{
+   "name": "tomcat",
+   "labels":{"name":"tomcat"},
+   "port":{"8080/tcp": 8888},
+   "volumes":{"/var/run": {"bind": "/var/run", "mode": "rw"}},
+   "image": "tomcat:latest"
+}

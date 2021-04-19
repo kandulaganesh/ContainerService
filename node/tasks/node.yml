@@ -45,3 +45,4 @@
   - brctl addif docker0 veth0
   - ip link set veth1 up
   - ip link set veth0 up
+  - ovs-vsctl set bridge br-int stp_enable=true

@@ -8,7 +8,19 @@ With Container Service, we can setup the cluster and scale the cluster very easi
 
 Container Service also supports HA for both nodes and master's. If active master goes down, second master which is in standby automatically becomes active.
 
-Using etcd for supporting master's HA.
+Using etcd for supporting master's HA and storing service configuration.
+
+This Project uses two bridges which are directly connected by virtual ethernet pair
+
+   1. Docker Bridge
+   2. OpenVSwitch Bridge
+
+Uses Docker Bridge for IPAM.
+OpenVSwicth for Inter-node Communication.
+
+Docker is a single node agent, i.e a container in node-1 can't communicate with the container in node-2, So to have inter-node communication, this project uses OpenVSwitch which is a distributed virtual multilayer switch for inter-node communication.
+
+
 
 # Tasks
 

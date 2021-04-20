@@ -63,6 +63,6 @@ With ContainerService we can setup cluster with a single touch using ansible con
 
 ## Architecture
 
-![alt text](https://github.com/kandulaganesh/ContainerService/blob/a5d8978734da0516f51d0adb64021fbbfb5d8c0a/images/ContainerService.jpeg?raw=true)
+![alt text](https://github.com/kandulaganesh/ContainerService/blob/d98b71ee30155da02985b64d8c5d7b19346bebba/images/ContainerService.jpeg?raw=true)
 
 Using gre tunnels for inter-node communication

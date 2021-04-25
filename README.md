@@ -67,6 +67,6 @@ With ContainerService we can setup cluster with a single touch using ansible con
 
 https://drive.google.com/file/d/1Rq8isvhT2Jew_HODtDte-W5VaVGOCJsw/view?usp=sharing
 
-https://drive.google.com/file/d/1GPdHxB2cdXuQ3mXmhbdXyBBHHad3E67D/view?usp=sharing
+https://drive.google.com/file/d/1ffw83MpED_xQffeS86DtXpvObPRGlOq9/view?usp=sharing
 
 Using gre tunnels for inter-node communication

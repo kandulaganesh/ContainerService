@@ -59,14 +59,16 @@ With ContainerService we can setup cluster with a single touch using ansible con
 
 # Issues and fixes
 
-1. Using STP for network loops
+1. Using STP to break the network loops
 
 ## Architecture
 
 ![alt text](https://github.com/kandulaganesh/ContainerService/blob/d98b71ee30155da02985b64d8c5d7b19346bebba/images/ContainerService.jpeg?raw=true)
 
+Slides:
 https://drive.google.com/file/d/1Rq8isvhT2Jew_HODtDte-W5VaVGOCJsw/view?usp=sharing
 
+Demo:
 https://drive.google.com/file/d/1ffw83MpED_xQffeS86DtXpvObPRGlOq9/view?usp=sharing
 
 Using gre tunnels for inter-node communication

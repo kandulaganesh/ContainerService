@@ -1,0 +1,56 @@
+name: Container Orchestration Service
+
+on:
+  push:
+    branches:
+      - '*'
+
+  pull_request:
+    branches: [ master,main ]
+
+
+jobs:
+
+  PrepareVersion:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: version
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      uses: docker://ganeshdinesh/semrelgenerator:dev2
+
+    - name: Upload Version
+      uses: actions/upload-artifact@v2
+      with:
+        name: version
+        path: version_
+
+  build:
+    if: github.event_name != 'pull_request'
+    needs: [PrepareVersion]
+    runs-on: ubuntu-latest
+    steps:
+      
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download Version
+      uses: actions/download-artifact@v2
+      with:
+        name: version
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+     
+    - name: Tag Package
+      shell: bash
+      run: |
+        value=`cat version_`
+        echo The Version is $value

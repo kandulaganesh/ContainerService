@@ -1,0 +1,17 @@
+{
+    "port": {
+        'containerPort/tcp':'hostport',
+        'containerPort/tcp':'hostport'
+    },
+    "volume":{
+        "hostPath1":{"bind":"ContainerPath1", "mode": "rw"},
+        "hostPath2":{"bind":"ContainerPath2"}
+    },
+    "name":"container-name",
+    "labels":{
+        "key1":"Value1",
+        "key2":"Value2"
+    },
+    "image": "containerImage",
+    "nodeSelector":"1"
+}

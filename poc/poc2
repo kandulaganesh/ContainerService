@@ -1,0 +1,68 @@
+#Master Script
+yum install https://repos.fedorapeople.org/repos/openstack/EOL/openstack-juno/epel-7/openvswitch-2.3.1-2.el7.x86_64.rpm -y
+yum install -y epel-release centos-release-openstack-train
+yum install openvswitch libibverbs -y
+yum install bridge-utils -y
+yum install docker -y
+
+echo "Subnet for this node is $node_subnet"
+sed -i "s/signature-verification=false/signature-verification=false --bip $master_subnet/" /etc/sysconfig/docker
+
+systemctl start docker
+systemctl start openvswitch
+sleep 5
+systemctl restart docker
+ovs-vsctl add-br br-int
+ip link add veth0 type veth peer name veth1
+ovs-vsctl add-port br-int veth1
+brctl addif docker0 veth0
+ip link set veth1 up
+ip link set veth0 up
+
+
+echo "Node-1 Ip is $node1_ip"
+ovs-vsctl add-port br-int gre1 -- \
+set interface gre1 type=gre options:remote_ip=$node1_ip
+
+
+echo "Node-2 Ip is $node2_ip"
+ovs-vsctl add-port br-int gre2 -- \
+set interface gre2 type=gre options:remote_ip=$node2_ip
+
+
+echo "Node-3 Ip is $node3_ip"
+ovs-vsctl add-port br-int gre3 -- \
+set interface gre3 type=gre options:remote_ip=$node3_ip
+
+
+ip route add 172.17.0.0/16 dev docker0
+
+echo "New Node is added, add tunnel from this master to node"
+
+
+
+
+
+
+Install dependencies
+
+    1. Docker
+    2. brctl (Bridge utilities)
+    3. openvswitch
+
+
+Change the /etc/sysconfig/docker and in the OPTIONS section --bip 10.0.10.1/24
+
+
+Follow these steps:
+    https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-ovs.html
+
+    This will setup the n/w configuration (openvswitch, and connection b/w the nodes)
+
+
+
+ip route add 10.0.12.0/24 dev docker0
+
+
+
+/keys/nodehealth/node<id>/healthy=True ttl=35

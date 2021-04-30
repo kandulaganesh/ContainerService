@@ -22,7 +22,7 @@ jobs:
     - name: version
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      uses: docker://ganeshdinesh/semrelgenerator:dev2
+      uses: docker://ganeshdinesh/semrelgenerator:latest
 
     - name: Upload Version
       uses: actions/upload-artifact@v2

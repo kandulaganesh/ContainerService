@@ -44,12 +44,6 @@ jobs:
       with:
         name: version
 
-    - name: Tag Package
-      shell: bash
-      run: |
-        Version=`cat version_`
-        echo The Version is $Version
-
     - name: Build The Dockerfile
       id: docker_build
       uses: docker/build-push-action@v2
@@ -57,5 +51,12 @@ jobs:
         context: ./src/
         file: ./src/Dockerfile
         push: false
-        tags: ganeshdinesh/containerservice:$Version
+        tags: ganeshdinesh/containerservice:latest
+
+    - name: Tag The docker image
+      shell: bash
+      run: |
+        Version=`cat version_`
+        echo The Version is $Version
+        docker tag ${{ steps.docker_build.outputs.digest }} ganeshdinesh/containerservice:$Version
 

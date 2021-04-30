@@ -1,0 +1,52 @@
+Commands for creating interface:
+	lsmod | grep dummy
+	modprobe dummy
+	ip link add eth_float type dummy
+	ifconfig eth_float 172.17.0.2 netmask 255.255.255.255
+
+
+
+Command to change the docker bridge subnet, add this feild in /etc/sysconfig/docker "--bip <subnet>"
+
+
+OpenVSwitch:
+
+	1. Create openvswitch bridge
+
+		ovs-vsctl add-br <bridge-name>
+		
+		example:
+			ovs-vsctl add-br br-int
+
+	2. Create Virtual ethernet pair
+
+		ip link add <interface-1> type veth peer name <interface-2>
+		example:
+			ip link add veth0 type veth peer name veth1
+
+	3. Attach an interface to openvswitch bridge
+		
+		ovs-vsctl add-port <bridge-name> <interface-name>
+		example:
+			ovs-vsctl add-port br-int veth1
+
+	4. Set gre tunnel from current openvswicth bridge to another
+
+		ovs-vsctl add-port <bridge-name> <interface-name> set interface <interface-name> type=gre options:remote_ip=<ip-address>
+		example:
+			ovs-vsctl add-port br-int gre0 set interface gre0 type=gre options:remote_ip=<ip of another machine>
+
+
+	5. Enable STP on bridge
+		ovs-vsctl set bridge <bridge-name> stp_enable=true
+		example:
+			ovs-vsctl set bridge br-int stp_enable=true
+
+
+miscellaneous:
+
+	ip link set <interface-name> up // To bringup or enable the interface
+	brctl addif <bridge-name> <interface-name> // Add interface to bridge
+
+
+

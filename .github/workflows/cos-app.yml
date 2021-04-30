@@ -44,13 +44,18 @@ jobs:
       with:
         name: version
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-     
     - name: Tag Package
       shell: bash
       run: |
-        value=`cat version_`
-        echo The Version is $value
+        Version=`cat version_`
+        echo The Version is $Version
+
+    - name: Build The Dockerfile
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        context: ./src/
+        file: ./src/Dockerfile
+        push: false
+        tags: ganeshdinesh/containerservice:$Version
+

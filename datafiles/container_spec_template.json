@@ -1,7 +1,7 @@
 {
     "port": {
-        'containerPort/tcp':'hostport',
-        'containerPort/tcp':'hostport'
+        "containerPort/tcp":"hostport",
+        "containerPort/tcp":"hostport"
     },
     "volume":{
         "hostPath1":{"bind":"ContainerPath1", "mode": "rw"},
